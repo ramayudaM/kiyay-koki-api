@@ -2,6 +2,9 @@ node_modules/
 .env
 auth_info_baileys/
 
+/public/images/*
+/public/videos/*
+
 !/public/images/
 !/public/images/.gitkeep
 !/public/videos/
