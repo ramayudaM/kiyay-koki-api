@@ -2,10 +2,7 @@ node_modules/
 .env
 auth_info_baileys/
 
-# Ignore all files in images and videos
-/public/images/*
-/public/videos/*
-
-# Allow the folder itself
 !/public/images/
+!/public/images/.gitkeep
 !/public/videos/
+!/public/videos/.gitkeep
