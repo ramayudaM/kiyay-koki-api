@@ -4,7 +4,6 @@ const { sendSuccess, sendError } = require('../utils/sendResponse');
 
 const generateApiKey = async (req, res) => {
   try {
-    // const result = await ProductsModel.getAllProducts();
     const { apiName } = req.body;
     const { id } = req.user;
 

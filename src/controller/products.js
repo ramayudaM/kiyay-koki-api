@@ -28,10 +28,7 @@ const createProduct = async (req, res) => {
     const { name, price, stock, description, discount, category, attributes } = req.body;
     const categoryData = parseJson(attributes);
 
-    if (
-      ![name, price, stock, description, discount, category].every(Boolean) ||
-      Object.keys(categoryData).length === 0
-    ) {
+    if (![name, price, stock, description, discount, category].every(Boolean) || Object.keys(categoryData).length === 0) {
       throw new Error('ValidationError: Missing required fields');
     }
 
@@ -63,10 +60,7 @@ const updateProduct = async (req, res) => {
     const { name, price, stock, description, discount, category, attributes } = req.body;
     const categoryData = parseJson(attributes);
 
-    if (
-      ![name, price, stock, description, discount, category].every(Boolean) ||
-      Object.keys(categoryData).length === 0
-    ) {
+    if (![name, price, stock, description, discount, category].every(Boolean) || Object.keys(categoryData).length === 0) {
       throw new Error('ValidationError: Missing required fields');
     }
 
@@ -99,18 +93,12 @@ const updateProduct = async (req, res) => {
 
     if (videoPath) {
       if (video) {
-        await Promise.all([
-          VideoModel.updateVideo(video.id, videoPath),
-          deleteFile(`public/videos/${video.video_url}`),
-        ]);
+        await Promise.all([VideoModel.updateVideo(video.id, videoPath), deleteFile(`public/videos/${video.video_url}`)]);
       } else {
         await VideoModel.createVideo(productId, videoPath);
       }
     } else if (video) {
-      await Promise.all([
-        VideoModel.deleteVideo(video.id),
-        deleteFile(`public/videos/${video.video_url}`),
-      ]);
+      await Promise.all([VideoModel.deleteVideo(video.id), deleteFile(`public/videos/${video.video_url}`)]);
     }
 
     sendSuccess(res, { id: productId }, 'Product updated successfully.');
@@ -119,10 +107,7 @@ const updateProduct = async (req, res) => {
       const imagePaths = req.files.images?.map((file) => file.filename) || [];
       const videoPath = req.files.video?.[0]?.filename || null;
 
-      await Promise.all([
-        ...imagePaths.map((image) => deleteFile(`public/images/${image}`)),
-        videoPath && deleteFile(`public/videos/${videoPath}`),
-      ]);
+      await Promise.all([...imagePaths.map((image) => deleteFile(`public/images/${image}`)), videoPath && deleteFile(`public/videos/${videoPath}`)]);
     }
 
     sendError(res, error);
