@@ -1,7 +1,7 @@
 const ShippingAddressModel = require('../models/shippingAddress');
 const { sendSuccess, sendError } = require('../utils/sendResponse');
 
-const getShippingAddress = async (req, res) => {
+const sellerGetShippingAddress = async (req, res) => {
   try {
     const result = await ShippingAddressModel.getShippingAddressByUserId(req.body.userId);
     sendSuccess(res, result, 'Shipping Address retrieved successfully.');
@@ -73,7 +73,7 @@ const deleteShippingAddress = async (req, res) => {
 };
 
 module.exports = {
-  getShippingAddress,
+  sellerGetShippingAddress,
   getShippingAddressById,
   getShippingAddressByUserId,
   createShippingAddress,

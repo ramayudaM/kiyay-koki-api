@@ -2,13 +2,11 @@ const pool = require('../config/database');
 
 const getShippingAddressByUserId = async (userId) => {
   try {
-    console.log(userId);
-
     const SQLQuery = 'SELECT * FROM shipping_address WHERE user_id=?';
     const [result] = await pool.execute(SQLQuery, [userId]);
 
     if (result.length === 0) {
-      throw new Error('NotFoundError: Shipping Address User not found');
+      throw new Error('NotFoundError: Shipping Address by user not found');
     }
 
     return result;
@@ -17,7 +15,7 @@ const getShippingAddressByUserId = async (userId) => {
       throw error;
     }
 
-    throw new Error('DatabaseError: Failed to fetch shipping address by user id');
+    throw new Error('DatabaseError: Failed to fetch shipping address by user');
   }
 };
 
@@ -36,7 +34,7 @@ const getShippingAddressById = async (id, userId) => {
       throw error;
     }
 
-    throw new Error('DatabaseError: Failed to fetch shipping address by id');
+    throw new Error('DatabaseError: Failed to fetch shipping address');
   }
 };
 

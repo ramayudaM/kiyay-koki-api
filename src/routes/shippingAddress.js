@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.use(middlewareVerifyToken);
 
-router.get('/seller', middlewarecheckUserLevel('seller'), ShippingAddressController.getShippingAddress);
+router.get('/seller', middlewarecheckUserLevel('seller'), ShippingAddressController.sellerGetShippingAddress);
 
 router.post('/', middlewarecheckUserLevel('buyer'), ShippingAddressController.createShippingAddress);
 
