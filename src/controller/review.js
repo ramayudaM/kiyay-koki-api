@@ -55,7 +55,7 @@ const deleteReview = async (req, res) => {
   try {
     const { id } = await ReviewModel.getReviewById(req.params.id, req.user.id);
     await ReviewModel.deleteReview(id);
-    sendSuccess(res, { id }, 'Shipping Address deleted successfully.');
+    sendSuccess(res, { id }, 'Review deleted successfully.');
   } catch (error) {
     sendError(res, error);
   }

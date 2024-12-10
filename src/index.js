@@ -7,6 +7,7 @@ const usersRoutes = require('./routes/users');
 const configRoutes = require('./routes/config');
 const shippingAddressRoutes = require('./routes/shippingAddress');
 const ReviewRoutes = require('./routes/review');
+const WishlistRoutes = require('./routes/wishlist');
 const middlewareLogRequest = require('./middleware/logs');
 const middlewareValidateApiKey = require('./middleware/validateApiKey');
 const { connectToWhatsApp } = require('./controller/whatsapp');
@@ -25,6 +26,7 @@ app.use('/users', usersRoutes);
 app.use('/config', configRoutes);
 app.use('/shipping-address', shippingAddressRoutes);
 app.use('/review', ReviewRoutes);
+app.use('/wishlist', WishlistRoutes);
 
 connectToWhatsApp();
 
