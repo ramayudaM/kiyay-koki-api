@@ -1,8 +1,12 @@
 const multer = require('multer');
 const path = require('path');
 
+console.log('MULTERRR');
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    console.log('filename', file.filename);
+
     if (file.fieldname === 'images') cb(null, 'public/images');
 
     if (file.fieldname === 'video') cb(null, 'public/videos');

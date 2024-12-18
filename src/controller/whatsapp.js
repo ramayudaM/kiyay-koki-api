@@ -1,10 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-} = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode');
 const { sendError } = require('../utils/sendResponse');
 
@@ -31,8 +27,7 @@ const connectToWhatsApp = async () => {
       console.log('Connection closed');
       isConnected = false;
 
-      const shouldReconnect =
-        lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut; // Tidak reconnect jika logged out
+      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut; // Tidak reconnect jika logged out
 
       if (shouldReconnect) {
         console.log('Retrying connection...');

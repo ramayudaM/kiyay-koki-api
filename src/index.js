@@ -12,8 +12,10 @@ const CartRoutes = require('./routes/cart');
 const middlewareLogRequest = require('./middleware/logs');
 const middlewareValidateApiKey = require('./middleware/validateApiKey');
 const { connectToWhatsApp } = require('./controller/whatsapp');
+const cors = require('cors');
 
 const app = express();
+app.use(cors());
 
 app.use(middlewareValidateApiKey);
 app.use(middlewareLogRequest);

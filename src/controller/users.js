@@ -47,6 +47,7 @@ const verifyOtp = async (req, res) => {
 
     const user = await UserModel.getUserByWA(waNumber);
     const otp = await OtpModel.getValidOtp(id, otpCode);
+    const role = user.level;
 
     if (!otp) {
       throw new Error('ValidationError: Invalid Or Expired OTP');
@@ -55,7 +56,7 @@ const verifyOtp = async (req, res) => {
     await OtpModel.verifiedOtp(otp.id, otpCode);
 
     const token = jwt.sign(user, process.env.SECRET_KEY, { expiresIn: '7d' });
-    sendSuccess(res, { token }, 'OTP verified successfully.');
+    sendSuccess(res, { token, role }, 'OTP verified successfully.');
   } catch (error) {
     sendError(res, error);
   }
@@ -77,8 +78,29 @@ const createUserSeller = async (req, res) => {
   }
 };
 
+const getAllUser = async (req, res) => {
+  try {
+    const result = await UserModel.getAllUser();
+
+    sendSuccess(res, result, 'New seller created successfully.');
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { id } = await UserModel.deleteUser(req.params.id);
+    sendSuccess(res, { id }, 'User deleted successfully.');
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
 module.exports = {
   requestOtp,
   verifyOtp,
   createUserSeller,
+  getAllUser,
+  deleteUser,
 };

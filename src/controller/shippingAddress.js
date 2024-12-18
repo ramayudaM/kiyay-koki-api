@@ -3,7 +3,7 @@ const { sendSuccess, sendError } = require('../utils/sendResponse');
 
 const sellerGetShippingAddress = async (req, res) => {
   try {
-    const result = await ShippingAddressModel.getShippingAddressByUserId(req.body.userId);
+    const result = await ShippingAddressModel.getShippingAddressByUserId(req.params.id);
     sendSuccess(res, result, 'Shipping Address retrieved successfully.');
   } catch (error) {
     sendError(res, error);
@@ -31,14 +31,19 @@ const getShippingAddressById = async (req, res) => {
 
 const createShippingAddress = async (req, res) => {
   try {
-    const { fullName, address, phoneNumber, province, city, subdistrict, postalCode, userId } = req.body;
+    const userId = req.user.id;
+    const { fullName, address, phoneNumber, province, city, subdistrict, postalCode } = req.body;
 
     if (![fullName, address, phoneNumber, province, city, subdistrict, postalCode, userId].every(Boolean)) {
       throw new Error('ValidationError: Missing required fields');
     }
 
-    const { id } = await ShippingAddressModel.createShippingAddress(req.body);
-    sendSuccess(res, { id }, 'Shipping Address created successfully.');
+    const { id } = await ShippingAddressModel.createShippingAddress(req.body, userId);
+    sendSuccess(
+      res,
+      { id, full_name: fullName, address, phone_number: phoneNumber, province, city, subdistrict, postal_code: postalCode },
+      'Shipping Address created successfully.'
+    );
   } catch (error) {
     sendError(res, error);
   }

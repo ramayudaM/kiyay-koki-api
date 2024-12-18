@@ -7,7 +7,23 @@ const parseJson = require('../utils/parseJson');
 
 const getAllProducts = async (req, res) => {
   try {
-    const result = await ProductsModel.getAllProducts();
+    const { search } = req.query;
+    const result = await ProductsModel.getAllProducts(search || '');
+    sendSuccess(res, result, 'Products retrieved successfully.');
+  } catch (error) {
+    sendError(res, error);
+  }
+};
+
+const getAllProductsByFilter = async (req, res) => {
+  try {
+    const { category, includeDeleted } = req.query;
+    const includeDeletedFlag = includeDeleted === 'true';
+    const result = await ProductsModel.getAllProductsByFilter({
+      categoryFilter: category || null,
+      includeDeleted: includeDeletedFlag,
+    });
+
     sendSuccess(res, result, 'Products retrieved successfully.');
   } catch (error) {
     sendError(res, error);
@@ -25,8 +41,10 @@ const getProductByID = async (req, res) => {
 
 const createProduct = async (req, res) => {
   try {
-    const { name, price, stock, description, discount, category, attributes } = req.body;
+    const { name, price, stock, description, discount, category, attributes, registered } = req.body;
     const categoryData = parseJson(attributes);
+
+    console.log(req.files);
 
     if (![name, price, stock, description, discount, category].every(Boolean) || Object.keys(categoryData).length === 0) {
       throw new Error('ValidationError: Missing required fields');
@@ -34,6 +52,7 @@ const createProduct = async (req, res) => {
 
     const imagePaths = req.files.images?.map((file) => file.filename) || [];
     const videoPath = req.files.video?.[0]?.filename;
+    console.log(imagePaths);
 
     if (imagePaths.length === 0) {
       throw new Error('ValidationError: At least one image is required');
@@ -164,4 +183,5 @@ module.exports = {
   deleteProduct,
   unlistedProduct,
   listedProduct,
+  getAllProductsByFilter,
 };

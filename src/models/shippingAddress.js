@@ -38,9 +38,9 @@ const getShippingAddressById = async (id, userId) => {
   }
 };
 
-const createShippingAddress = async (data) => {
+const createShippingAddress = async (data, userId) => {
   try {
-    const { fullName, address, phoneNumber, province, city, subdistrict, postalCode, userId } = data;
+    const { fullName, address, phoneNumber, province, city, subdistrict, postalCode } = data;
     const SQLQuery = `INSERT INTO shipping_address (full_name, address, phone_number, province, city, subdistrict, postal_code, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     const [result] = await pool.execute(SQLQuery, [fullName, address, phoneNumber, province, city, subdistrict, postalCode, userId]);
     return { id: result.insertId };

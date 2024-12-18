@@ -11,6 +11,18 @@ const getUserByWA = async (waNumber) => {
   }
 };
 
+const getAllUser = async () => {
+  try {
+    const level = 'buyer';
+    const SQLQuery = 'SELECT * FROM user WHERE level=?';
+    const [user] = await pool.execute(SQLQuery, [level]);
+
+    return user.length > 0 ? user : null;
+  } catch (error) {
+    throw new Error('DatabaseError: Failed to fetch user');
+  }
+};
+
 const createUser = async (waNumber) => {
   try {
     const level = 'buyer';
@@ -33,8 +45,19 @@ const createUserSeller = async (waNumber) => {
   }
 };
 
+const deleteUser = async (id) => {
+  try {
+    const SQLQuery = 'DELETE FROM user WHERE id=?';
+    await pool.execute(SQLQuery, [id]);
+  } catch (error) {
+    throw new Error('DatabaseError: Failed to delete wishlist');
+  }
+};
+
 module.exports = {
   getUserByWA,
   createUser,
   createUserSeller,
+  getAllUser,
+  deleteUser,
 };

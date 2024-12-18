@@ -20,6 +20,8 @@ const getReviewById = async (id, userId) => {
 };
 
 const getReviewByUserId = async (userId) => {
+  console.log(userId);
+
   try {
     const SQLQuery = 'SELECT * FROM review WHERE user_id=?';
     const [result] = await pool.execute(SQLQuery, [userId]);

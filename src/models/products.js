@@ -5,10 +5,25 @@ const ProductCategoryModel = require('../models/productCategory');
 const parseJson = require('../utils/parseJson');
 const { getFormattedDate } = require('../utils/dateHelper');
 
-const getAllProducts = async () => {
+const getAllProducts = async (searchQuery = '') => {
   try {
-    const SQLQuery = 'SELECT * FROM product WHERE deleted_at IS NULL';
-    const [productsData] = await pool.execute(SQLQuery);
+    // SQL Query dengan kondisi LIKE jika searchQuery tidak kosong
+    const SQLQuery = `
+      SELECT 
+        p.*, 
+        ROUND(IFNULL(AVG(r.rating), 0), 2) AS averageRating, 
+        IFNULL(COUNT(r.id), 0) AS totalReviews 
+      FROM product p 
+      LEFT JOIN review r ON p.id = r.product_id 
+      WHERE p.deleted_at IS NULL 
+      ${searchQuery ? 'AND p.name LIKE ?' : ''}
+      GROUP BY p.id;
+    `;
+
+    const queryParams = searchQuery ? [`%${searchQuery}%`] : [];
+
+    // Eksekusi query dengan parameter
+    const [productsData] = await pool.execute(SQLQuery, queryParams);
 
     if (productsData.length === 0) {
       throw new Error('NotFoundError: Products not found');
@@ -16,10 +31,7 @@ const getAllProducts = async () => {
 
     const allProducts = await Promise.all(
       productsData.map(async (product) => {
-        const attributes = await ProductCategoryModel.getProductCategory(
-          product.id,
-          product.category
-        );
+        const attributes = await ProductCategoryModel.getProductCategory(product.id, product.category);
         const images = await ImagesModel.getImages(product.id);
         const video = await VideoModel.getVideo(product.id);
 
@@ -42,9 +54,65 @@ const getAllProducts = async () => {
   }
 };
 
+const getAllProductsByFilter = async ({ categoryFilter = null, includeDeleted = false }) => {
+  try {
+    // SQL Query dengan kondisi dinamis
+    const SQLQuery = `
+      SELECT 
+        p.*, 
+        ROUND(IFNULL(AVG(r.rating), 0), 2) AS averageRating, 
+        IFNULL(COUNT(r.id), 0) AS totalReviews 
+      FROM product p 
+      LEFT JOIN review r ON p.id = r.product_id 
+      WHERE 1=1 
+        ${!includeDeleted ? 'AND p.deleted_at IS NULL' : 'AND p.deleted_at IS NOT NULL'}
+        ${categoryFilter ? 'AND p.category = ?' : ''}
+      GROUP BY p.id;
+    `;
+
+    // Buat queryParams berdasarkan kondisi
+    const queryParams = [];
+    if (categoryFilter) queryParams.push(categoryFilter);
+
+    // Eksekusi query dengan parameter
+    const [productsData] = await pool.execute(SQLQuery, queryParams);
+
+    // Jika tidak ada data ditemukan
+    if (productsData.length === 0) {
+      throw new Error('NotFoundError: Products not found');
+    }
+
+    // Memproses data tambahan (attributes, images, video)
+    const allProducts = await Promise.all(
+      productsData.map(async (product) => {
+        const attributes = await ProductCategoryModel.getProductCategory(product.id, product.category);
+        const images = await ImagesModel.getImages(product.id);
+        const video = await VideoModel.getVideo(product.id);
+
+        return {
+          ...product,
+          attributes,
+          images,
+          video,
+        };
+      })
+    );
+
+    return allProducts;
+  } catch (error) {
+    // Penanganan error spesifik
+    if (error.message.startsWith('NotFoundError')) {
+      throw error;
+    }
+
+    throw new Error('DatabaseError: Failed to fetch products');
+  }
+};
+
 const getProductByID = async (id) => {
   try {
-    const SQLQuery = `SELECT * FROM product WHERE id=?`;
+    const SQLQuery =
+      'SELECT p.*, ROUND(IFNULL(AVG(r.rating), 0), 2) AS averageRating, IFNULL(COUNT(r.id), 0) AS totalReviews FROM product p LEFT JOIN review r ON p.id = r.product_id WHERE p.id=? GROUP BY p.id;';
     const [product] = await pool.execute(SQLQuery, [id]);
 
     if (product.length === 0) {
@@ -77,14 +145,7 @@ const createProduct = async (data) => {
 
     const SQLQuery = `INSERT INTO product (name, price, stock, description, discount, category) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    const [productsData] = await pool.execute(SQLQuery, [
-      name,
-      price,
-      stock,
-      description,
-      discount,
-      category,
-    ]);
+    const [productsData] = await pool.execute(SQLQuery, [name, price, stock, description, discount, category]);
 
     const id = productsData.insertId;
 
@@ -160,4 +221,5 @@ module.exports = {
   deleteProduct,
   unlistedProduct,
   listedProduct,
+  getAllProductsByFilter,
 };

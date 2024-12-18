@@ -3,8 +3,8 @@ const { sendSuccess, sendError } = require('../utils/sendResponse');
 
 const getReviewByUserId = async (req, res) => {
   try {
-    const userId = req.user.level === 'seller' ? req.body.userId : req.user.id;
-    const result = await ReviewModel.getReviewByUserId(userId);
+    // const userId = req.user.level === 'seller' ? req.body.userId : req.user.id;
+    const result = await ReviewModel.getReviewByUserId(req.params.id);
     sendSuccess(res, result, 'Review By User retrieved successfully.');
   } catch (error) {
     sendError(res, error);
@@ -13,7 +13,7 @@ const getReviewByUserId = async (req, res) => {
 
 const getReviewByProductId = async (req, res) => {
   try {
-    const result = await ReviewModel.getReviewByProductId(req.body.productId);
+    const result = await ReviewModel.getReviewByProductId(req.params.id);
     sendSuccess(res, result, 'Review By Product retrieved successfully.');
   } catch (error) {
     sendError(res, error);

@@ -8,24 +8,14 @@ const sendResponse = (res, statusCode, success, message, error = null, data = nu
 };
 
 const sendError = (res, error) => {
+  // return sendResponse(res, 500, false, error, error.message);
+
   if (error.message.startsWith('DatabaseError')) {
-    return sendResponse(
-      res,
-      500,
-      false,
-      'Internal Server Error: Database operation failed',
-      error.message
-    );
+    return sendResponse(res, 500, false, 'Internal Server Error: Database operation failed', error.message);
   }
 
   if (error.message.startsWith('AuthorizationError')) {
-    return sendResponse(
-      res,
-      401,
-      false,
-      'Unauthorized: Authentication credentials invalid',
-      error.message
-    );
+    return sendResponse(res, 401, false, 'Unauthorized: Authentication credentials invalid', error.message);
   }
 
   if (error.message === 'ForbiddenError') {
